@@ -1,0 +1,327 @@
+
+Name: Yash Bardapurkar
+Last 4 digits ID: 1650
+Computer IP address:
+CSE 6331, Cloud Computing					
+
+
+Quiz Q5, 3.30, Summer 2019   (c) DL, UTA, 2019
+
+
+  C&P means cut and paste only those relevant lines from your program(s) into this quiz.
+
+
+ 1.  I understand that I am on my honor during this quiz, I will not collaborate, use 
+     non-allowed sources, and I will not discuss or share this quiz with anyone for the next 
+     12 hours.
+     You MAY: use Google to search, use previous source code, 
+     YOU MAY NOT use:
+     Email, Facebook, Hangouts, IM, chats, Skype or ANY other human connection.
+
+     This is a timed test. Late tests will have points deducted for being late.
+     Very late tests will not be graded.
+
+     When you are complete, with any part, please raise your hand, so we may visually inspect that part.
+
+     The second part of the test, you should electronically submit, you will need to copy and paste 
+     only those lines of code to implement that part of the test, usually a few (two to eight) lines of code. 
+     Place it immediately after the question.
+
+     Submit this Quiz (renamed) with code cut and pasted, ONLY text. DO NOT submit zips, binaries, libraries,
+     or anything other than text.
+
+     When any parts(questions) are complete complete, submit this test, you may make multiple submissions.
+
+     If you have computer, or other, problems, please raise your hand immediately.
+
+     If you understand and agree, please initial here:
+     YB
+     _________________
+
+ 2. Get files from this same folder.
+   
+ 3. Name your program/submission with your name and last digits of your ID.
+
+ 4. Using the cloud services provider, all functionality possible should be implemented on that provider.
+    (Of course, displaying web pages through a browser and the user interface is "local")
+    The cloud service provider is AWS.
+
+ 4+ In order to give as many people the opportunity to demo in the last few minutes, you may only demo ONE Question in the
+    last 5 minutes of the quiz time or for the few minutes afterward. 
+
+ 4++ Missing data is not available, and should not be considered to be zero.
+  
+Show and submit code, when each part is complete, raise your hand and then show us:
+
+ 5. Using k-means clustering, find: 
+       first: 4 clusters based on columns Age and Height.
+       Show, in textual form, time to run, centroids for the clusters, and number of points in each cluster. 
+       then: 3 clusters based on CabinNum and Fare.
+       Show, in textual form, time to run, centroids for the clusters, and number of points in each cluster. 
+       Display both results on the same web page.
+       (no "visualizing", no graphing necessary).
+
+@application.route('/prob5', methods=["POST"])
+def prob5():
+
+    start_time_1 = datetime.datetime.now().timestamp()
+
+    clusterno = 4
+    
+    cur = conn.cursor()
+    sql = "SELECT age, height from minnow where age != '' and height != '';"
+    cur.execute(sql)
+
+    npArray = np.array(cur.fetchall())
+
+    k_means = KMeans(n_clusters=clusterno)
+    k_means.fit(npArray)
+
+    arr_centroids = k_means.cluster_centers_
+    arr_labels = k_means.labels_
+
+    count = Counter(arr_labels)
+    number = list(count.items())
+
+    centers1 = []
+    centroids = arr_centroids.tolist()
+    for i in range(clusterno):
+        centers1.append([arr_centroids[i][0], arr_centroids[i][1], number[i][1]])
+
+    total_time_1 = datetime.datetime.now().timestamp() - start_time_1
+
+    start_time_2 = datetime.datetime.now().timestamp()
+
+    clusterno = 3
+
+    cur = conn.cursor()
+    sql = "SELECT CabinNum, fare from minnow where CabinNum != '' and fare != '';"
+    cur.execute(sql)
+
+    npArray = np.array(cur.fetchall())
+
+    k_means = KMeans(n_clusters=clusterno)
+    k_means.fit(npArray)
+
+    arr_centroids = k_means.cluster_centers_
+    arr_labels = k_means.labels_
+
+    count = Counter(arr_labels)
+    number = list(count.items())
+
+    centers2 = []
+    centroids = arr_centroids.tolist()
+    for i in range(clusterno):
+        centers2.append([arr_centroids[i][0], arr_centroids[i][1], number[i][1]])
+
+    total_time_2 = datetime.datetime.now().timestamp() - start_time_2
+
+    return render_template('prob5.html', centroids1=centers1, centroids2=centers2, time1=total_time_1, time2=total_time_2, deets=deets)
+
+<h1>Age and Height</h1>
+<p>Time: {{time1}} ms</p>
+<table>
+    <tr>
+        <th>Age</th>
+        <th>Height</th>
+        <th>Size</th>
+    </tr>
+    {% for row in centroids1 %}
+    <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<br>
+
+<h1>CabinNum and Fare</h1>
+<p>Time: {{time2}} ms</p>
+<table>
+    <tr>
+        <th>CabinNum</th>
+        <th>Fare</th>
+        <th>Size</th>
+    </tr>
+    {% for row in centroids2 %}
+    <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<br>
+
+ 6. Create a web form that allows a user to choose the number of clusters to find, and select any two attributes
+    (columns) from CabinNum, Lat, Age, Wealth, Education and fare and show, the results, in textual form: 
+    centroids, and list the number of points in each cluster. 
+    Also show the maximum distance (how tightly packed) between all points in each cluster (in a table).
+    (For example a user may enter 10 as the number of clusters to find, and may select age and fare as the two attributes.)
+
+@application.route('/prob6', methods=["POST"])
+def prob6():
+    clusterno = int(request.form['clusterno'])
+
+    column1 = int(request.form['column1'])
+    column2 = int(request.form['column2'])
+
+    cur = conn.cursor()
+    sql = "SELECT " +  options[column1] + ", " +  options[column2] + " from minnow where " + options[column1] + " != '' and " + options[column2] + " != '';"
+    cur.execute(sql)
+
+    npArray = np.array(cur.fetchall())
+
+    if (column1 == 7 or column1 == 1 or column1 == 2) :
+        label_encoder = LabelEncoder()
+        npArray[:, 0] = label_encoder.fit_transform(npArray[:, 0])
+    if (column2 == 7 or column2 == 2 or column2 == 2) :
+        label_encoder = LabelEncoder()
+        npArray[:, 1] = label_encoder.fit_transform(npArray[:, 1])
+
+    k_means = KMeans(n_clusters=clusterno)
+    k_means.fit(npArray)
+
+    arr_centroids = k_means.cluster_centers_
+    arr_labels = k_means.labels_
+
+    count = Counter(arr_labels)
+    number = list(count.items())
+
+    centers = []
+    centroids = arr_centroids.tolist()
+    for i in range(clusterno):
+        centers.append([arr_centroids[i][0], arr_centroids[i][1], number[i][1]])
+
+
+    return render_template('prob6.html', col1=options[column1], col2=options[column2], centroids=centers, deets=deets)
+
+
+{% for item in deets %}
+<h1>{{ item }}</h1>
+{% endfor %}
+<br>
+
+<h1>16)</h1>
+
+<style type="text/css">
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+</style>
+
+<h1>{{col1}} and {{col2}}</h1>
+<table>
+    <tr>
+        <th>{{col1}}</th>
+        <th>{{col2}}</th>
+        <th>Size</th>
+    </tr>
+    {% for row in centroids %}
+    <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<br>
+
+ 7. On a web form, a user will give a centroid (location) and you will show the name of ANY passenger in that cluster, 
+    and that passengers name, age, wealth, cabin and survival.
+
+ 8. Bonus:
+    Using what was done in question 6, showing the same web form, please show a page,
+    followed by a either a pie chart or a vertical bar chart on that page, which is at least 80 percent the width of the screen, 
+    which has, as a label, the centroid of a cluster, and is proportional to the number of points in that cluster.
+    That is: each bar or pie slice should have a label for the centroid of that cluster, and it's size is relative to he number of points 
+    in that cluster.
+    Each bar or pie slice should be in a different color, please show labels inside or to the right of each bar, 
+    or inside or adjacent to each pie slice.
+
+
+@application.route('/prob8', methods=["POST"])
+def prob8():
+    clusterno = int(request.form['clusterno'])
+
+    column1 = int(request.form['column1'])
+    column2 = int(request.form['column2'])
+
+    cur = conn.cursor()
+    sql = "SELECT " +  options[column1] + ", " +  options[column2] + " from minnow where " + options[column1] + " != '' and " + options[column2] + " != '';"
+    cur.execute(sql)
+
+    npArray = np.array(cur.fetchall())
+
+    if (column1 == 7 or column1 == 1 or column1 == 2) :
+        label_encoder = LabelEncoder()
+        npArray[:, 0] = label_encoder.fit_transform(npArray[:, 0])
+    if (column2 == 7 or column2 == 2 or column2 == 2) :
+        label_encoder = LabelEncoder()
+        npArray[:, 1] = label_encoder.fit_transform(npArray[:, 1])
+
+    k_means = KMeans(n_clusters=clusterno)
+    k_means.fit(npArray)
+
+    arr_centroids = k_means.cluster_centers_
+    arr_labels = k_means.labels_
+
+    count = Counter(arr_labels)
+    number = list(count.items())
+
+    centers = []
+    centroids = arr_centroids.tolist()
+    for i in range(clusterno):
+        centers.append([i, arr_centroids[i][0], arr_centroids[i][1], number[i][1]])
+
+
+    return render_template('prob8.html', col1=options[column1], col2=options[column2], centroids=centers, deets=deets)
+
+{% for item in deets %}
+<h1>{{ item }}</h1>
+{% endfor %}
+<br>
+
+<h1>8)</h1>
+
+<style type="text/css">
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+</style>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+
+    var data = google.visualization.arrayToDataTable([
+      ['Cluster No', 'Size'],
+      {% for row in centroids %}
+      [ '{{ row[1] }}, {{ row[2] }}', {{ row[3] }} ] ,
+      {% endfor %}
+    ]);
+
+    var options = {
+      title: 'Cluster Pie Chart: {{col1}} and {{col2}}',
+      width: 1200,
+      height: 900,
+      pieSliceText: 'label',
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+    chart.draw(data, options);
+  }
+</script>
+<div id="piechart" style="width: 900px; height: 500px;"></div>
+ 
+ 9. Show GTA parts 5, 6, 7, 8(if done)
+
+ 10. When complete, return (send) this quiz
+     If you finish early, send this immediately, otherwise send between
+     the end of class and no more than 1 minute after that.

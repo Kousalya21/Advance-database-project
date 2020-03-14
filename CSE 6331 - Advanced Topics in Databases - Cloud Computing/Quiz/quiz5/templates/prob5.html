@@ -1,0 +1,49 @@
+{% for item in deets %}
+<h1>{{ item }}</h1>
+{% endfor %}
+<br>
+
+<h1>5)</h1>
+
+<style type="text/css">
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+</style>
+
+<h1>Age and Height</h1>
+<p>Time: {{time1}} ms</p>
+<table>
+	<tr>
+		<th>Age</th>
+		<th>Height</th>
+		<th>Size</th>
+	</tr>
+	{% for row in centroids1 %}
+	<tr>
+		<td>{{ row[0] }}</td>
+		<td>{{ row[1] }}</td>
+		<td>{{ row[2] }}</td>
+	</tr>
+	{% endfor %}
+</table>
+<br>
+
+<h1>CabinNum and Fare</h1>
+<p>Time: {{time2}} ms</p>
+<table>
+	<tr>
+		<th>CabinNum</th>
+		<th>Fare</th>
+		<th>Size</th>
+	</tr>
+	{% for row in centroids2 %}
+	<tr>
+		<td>{{ row[0] }}</td>
+		<td>{{ row[1] }}</td>
+		<td>{{ row[2] }}</td>
+	</tr>
+	{% endfor %}
+</table>
+<br>

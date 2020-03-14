@@ -1,0 +1,32 @@
+<style type="text/css" media="screen">
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+</style>
+<h1>3)</h1>
+<table>
+	<tr>
+		<th>ID</th>
+		<th>Time</th>
+		<th>Magnitude</th>
+		<th>Distance (km)</th>
+		<th>Latitude</th>
+		<th>Longitude</th>
+		<th>Depth</th>
+		<th>Place</th>
+	</tr>
+
+	{% for row in result %}
+	<tr>
+		<td> {{ row["ID"] }} </td>
+		<td> {{ row["TIME"] }} </td>
+		<td> {{ row["MAG"] }} </td>
+		<td> {{ row["DISTANCE"] }} </td>
+		<td> {{ row["LATITUDE"] }} </td>
+		<td> {{ row["LONGITUDE"] }} </td>
+		<td> {{ row["DEPTH"] }} </td>
+		<td> {{ row["PLACE"] }} </td>
+	</tr>
+	{% endfor %}
+</table>

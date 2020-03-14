@@ -1,0 +1,24 @@
+<style type="text/css">
+	h1{
+		color: blue;
+	}
+</style>
+
+{% for item in deets %}
+<h1>{{ item }}</h1>
+{% endfor %}
+<br>
+
+<h1>Admin Page</h1>
+
+<h1>list of students</h1>
+<form action="/admin/students" method="post">
+	<label>Course id</label>
+	<input type="number" name="course_id"><br>
+
+	<label>Section</label>
+	<input type="number" name="section"><br>
+
+	<input type="submit" name="submit">
+</form>
+<br>

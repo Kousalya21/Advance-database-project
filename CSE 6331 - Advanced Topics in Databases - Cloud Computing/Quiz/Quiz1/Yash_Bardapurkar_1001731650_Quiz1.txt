@@ -1,0 +1,205 @@
+
+Name: Yash Bardapurkar
+Last 4 digits ID: 1001731650
+Computer IP address:
+CSE 6331, Cloud Computing					
+
+
+Quiz Q1, 3.30, Summer 2019   (c) DL, UTA, 2019
+
+
+  C&P means cut and paste only those relevant lines from your program(s) into this quiz.
+
+
+ 1.  I understand that I am on my honor during this quiz, I will not collaborate, use 
+     non-allowed sources, and I will not discuss or share this quiz with anyone for the next 
+     12 hours.
+     You MAY: use Google to search, use previous source code, 
+     YOU MAY NOT use:
+     Email, Facebook, Hangouts, IM, chats, Skype or ANY other human connection.
+
+     This is a timed test. Late tests will have points deducted for being late.
+     Very late tests will not be graded.
+
+     When you are complete, with any part, please raise your hand, so we may visually inspect that part.
+
+     The second part of the test, you should electronically submit, you will need to copy and paste 
+     only those lines of code to implement that part of the test, usually a few (two to eight) lines of code. 
+     Place it immediately after the question.
+
+     Submit this Quiz (renamed) with code cut and pasted, ONLY text. DO NOT submit zips, binaries, libraries,
+     or anything other than text.
+
+     When any parts(questions) are complete complete, submit this test, you may make multiple submissions.
+
+     If you have computer, or other, problems, please raise your hand immediately.
+
+     If you understand and agree, please initial here:
+     YB
+     _________________
+
+ 2. Get files from this same folder.
+   
+ 3. Name your program/submission with your name and last digits of your ID.
+
+ 4. Using the cloud services provider, all functionality possible should be implemented on that provider.
+    (Of course, displaying web pages through a browser and the user interface is "local")
+  
+Show and submit code, when each part is complete, raise your hand and then show us:
+
+ 5. Show a web page and interface (which resides on the cloud provider) with your name and 
+    student ID in large font at the top of every web page displayed (for this quiz)
+    The cloud service provider is IBM Cloud (BlueMix).
+
+<h1>Yash Bardapurkar</h1>
+<h1>1001731650</h1>
+<br>
+
+    
+ 6. Upload all data files (*jpg and *csv, not this quiz) to cloud service, 
+    then show the names and sizes of each (stored on cloud) on your screen in a web page.
+
+@app.route('/list_files', methods=["GET"])
+def list_files():
+    # sending get request and saving the response as response object 
+    data = requests.get(base_url)
+    xpars = xmltodict.parse(data.text)
+    st = ''
+    for item in xpars["ListBucketResult"]['Contents']:
+        st = st + 'name : ' + item["Key"]
+        st = st + 'size : ' + item["Size"]
+        st = st + '\n\n'
+    # sss = json.dumps(xpars["ListBucketResult"]['Contents'])
+    # return st
+
+    return render_template('list_files.html', result=xpars["ListBucketResult"]['Contents'])
+
+
+<h1>Yash Bardapurkar</h1>
+<h1>1001731650</h1>
+<br>
+
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Size</th>
+    </tr>
+{% for item in result %}
+    <tr>
+        <td>{{ item["Key"] }}</td>
+        <td>{{ item["Size"] }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+
+ 7. Through a web interface (page), allow user to give a room number and you show the corresponding names, pictures, and "favorite" 
+    (or show "no data or matching available").
+
+# search by name function
+@app.route('/search_room', methods=["POST"])
+def search_by_room():
+    room = request.form["room"]
+
+    sql = "SELECT * FROM quiz1people WHERE room = ?"
+    stmt = ibm_db.prepare(connect.connection, sql)
+
+    ibm_db.bind_param(stmt, 1, room)
+    result = ibm_db.execute(stmt)
+
+    result_dict = ibm_db.fetch_assoc(stmt)
+    print(result_dict)
+    
+    return render_template('room_search.html', result=result_dict)
+
+
+{% if result == False %}
+    No result
+{% else %}
+    <p>{{ result["NAME"] }}</p>
+<img src={{ "https://s3.us-south.cloud-object-storage.appdomain.cloud/1650-quiz-1-bucket/" }}{{result['PICTURE']}}  height="200px">
+
+{% endif %}
+
+
+
+<br>
+
+
+<p>{{ result["NAME"] }}</p>
+<img src="https://s3.us-south.cloud-object-storage.appdomain.cloud/1650-quiz-1-bucket/"{{result[""]}}  height="200px">
+<p>{{ result['FAVOURITE'] }}</p>
+
+ 8. (Web Page) allow a user to give two "point" values and one room number and show all pictures, names, and states for each person
+    within that range (matching) of point values, whose room is greater than the given room value.
+
+
+<form action="points_search" method="post">
+    <label>Start Points</label>
+    <input type="number" name="start_point">
+    <label>Start Points</label>
+    <input type="number" name="end_point">
+    <br>
+    <input type="submit" name="points_submit" value="Search by Points">
+</form>
+
+
+@app.route('/points_search', methods=["POST"])
+def points_search():
+    start = request.form["start_point"]
+    end = request.form["end_point"]
+
+    sql = "SELECT * FROM quiz_0_people WHERE 'points' > ? and points < ?"
+    stmt = ibm_db.prepare(connect.connection, sql)
+
+    ibm_db.bind_param(stmt, 1, start)
+    ibm_db.bind_param(stmt, 2, end)
+    result = ibm_db.execute(stmt)
+
+    ret = [];
+    result_dict = ibm_db.fetch_assoc(stmt)
+
+    while result_dict is not False:
+        print(json.dumps(result_dict))
+        ret.append(result_dict)
+        result_dict = ibm_db.fetch_assoc(stmt)
+    return render_template('search.html', result=ret)
+
+
+ 9. (Web page) allow a user to give a room number (and if necessary name) then modify either the name, points or the picture.
+
+
+<form action="/update" method="post">
+    
+    <label>Room</label>
+    <input type="number" name="room"><br>
+
+    <label>Keywords</label>
+    <input type="text" name="keywords"><br>
+
+    <input type="submit" name="add_people_submit" value="Update">
+
+</form>
+
+
+@app.route('/update', methods=["POST"])
+def update():
+    room = request.form["room"]
+    keywords = request.form["keywords"]
+
+    sql = "UPDATE quiz1people SET name = ? WHERE points = ?"
+    stmt = ibm_db.prepare(connect.connection, sql)
+    ibm_db.bind_param(stmt, 1, keywords)
+    ibm_db.bind_param(stmt, 2, room)
+
+    result = ibm_db.execute(stmt)
+    return redirect(url_for("just_hello")) 
+
+
+ 10. Show GTA parts 5, 6, 7, 8, 9
+
+ 11. When complete, return (send) this quiz
+     If you finish early, send this immediately, otherwise send between
+     the end of class and no more than 1 minute after that.
+

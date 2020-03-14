@@ -1,0 +1,73 @@
+<h1>1)</h1>
+<form action="/prob1" method="post">
+	<label>Magnitude greater than:</label>
+	<input type="number" name="magnitude"><br>
+
+	<input type="submit" name="prob_1_submit" value="Submit">
+</form>
+
+<h1>2)</h1>
+<form action="/prob2" method="post">
+	<label>Magnitude in range:</label>
+	<input type="number" step="0.01" name="start_magnitude">
+	<label> and </label>
+	<input type="number" step="0.01" name="end_magnitude">
+	<br>
+	<br>
+
+	<label>Date range:</label><br>
+	<input type="radio" name="dates" value="all" checked>All</input><br>
+	<input type="radio" name="dates" value="date">Date range</input><br>
+	<label>Start range:</label>
+	<input type="date" name="start_range" min={{ result["startdate"].strftime("%Y-%m-%d") }} max={{ result["enddate"].strftime("%Y-%m-%d") }} >
+	<br>
+	<label>End range:</label>
+	<input type="date" name="end_range" min={{ result["startdate"].strftime("%Y-%m-%d") }} max={{ result["enddate"].strftime("%Y-%m-%d") }} >
+	<br>
+
+	<input type="submit" name="prob_2_submit" value="Submit">
+</form>
+
+<h1>3)</h1>
+<form action="/prob3" method="post">
+	<label>Latitude</label>
+	<input type="number" step="0.0001" name="latitude"><br>
+
+	<label>Longitude</label>
+	<input type="number" step="0.0001" name="longitude"><br>
+
+	<label>Distance</label>
+	<input type="number" name="distance"><br>
+
+	<input type="submit" name="prob_3_submit" value="Submit">
+</form>
+
+<h1>4)</h1>
+<form action="/prob4" method="post">
+
+	<label>Start Latitude</label>
+	<input type="number" step="0.0001" name="start_latitude" required><br>
+
+	<label>Start Longitude</label>
+	<input type="number" step="0.0001" name="start_longitude" required><br>
+
+	<label>End Latitude</label>
+	<input type="number" step="0.0001" name="end_latitude" required><br>
+
+	<label>End Longitude</label>
+	<input type="number" step="0.0001" name="end_longitude" required><br>
+
+	<label>Steps (in degrees)</label>
+	<input type="number" step="0.5" min="0" max="10" name="step" required><br>
+
+	<input type="submit" name="prob_4_submit" value="Submit">
+</form>
+
+
+
+<h1>5)</h1>
+<form action="/prob5" method="post">
+
+	<input type="submit" name="prob_5_submit" value="Submit">
+</form>
+

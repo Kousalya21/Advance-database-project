@@ -1,0 +1,11 @@
+{% for item in deets %}
+<h1>{{ item }}</h1>
+{% endfor %}
+<br>
+
+<h1>2)</h1>
+
+Number of queries = {{ query_count }}<br>
+Cache = {{ "Yes" if use_cache else "No" }}<br>
+<br>
+Execution time = {{ execution_time }}<br>

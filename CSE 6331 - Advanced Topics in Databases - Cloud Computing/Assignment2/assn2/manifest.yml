@@ -1,0 +1,4 @@
+applications:
+- name: 1001731650-Assignment-2
+  random-route: true
+  memory: 64M

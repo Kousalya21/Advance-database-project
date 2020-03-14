@@ -1,0 +1,30 @@
+{% for item in deets %}
+<h1>{{ item }}</h1>
+{% endfor %}
+<br>
+
+<h1>16)</h1>
+
+<style type="text/css">
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+</style>
+
+<h1>{{col1}} and {{col2}}</h1>
+<table>
+	<tr>
+		<th>{{col1}}</th>
+		<th>{{col2}}</th>
+		<th>Size</th>
+	</tr>
+	{% for row in centroids %}
+	<tr>
+		<td>{{ row[0] }}</td>
+		<td>{{ row[1] }}</td>
+		<td>{{ row[2] }}</td>
+	</tr>
+	{% endfor %}
+</table>
+<br>

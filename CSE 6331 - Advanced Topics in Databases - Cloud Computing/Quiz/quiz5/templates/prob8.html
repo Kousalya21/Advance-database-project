@@ -1,0 +1,40 @@
+{% for item in deets %}
+<h1>{{ item }}</h1>
+{% endfor %}
+<br>
+
+<h1>8)</h1>
+
+<style type="text/css">
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+</style>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+
+    var data = google.visualization.arrayToDataTable([
+      ['Cluster No', 'Size'],
+      {% for row in centroids %}
+      [ '{{ row[1] }}, {{ row[2] }}', {{ row[3] }} ] ,
+      {% endfor %}
+    ]);
+
+    var options = {
+      title: 'Cluster Pie Chart: {{col1}} and {{col2}}',
+      width: 1200,
+      height: 900,
+      pieSliceText: 'label',
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+    chart.draw(data, options);
+  }
+</script>
+<div id="piechart" style="width: 900px; height: 500px;"></div>

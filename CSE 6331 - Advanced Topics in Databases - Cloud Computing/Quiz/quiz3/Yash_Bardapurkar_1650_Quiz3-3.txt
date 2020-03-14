@@ -1,0 +1,254 @@
+
+Name: Yash Bardapurkar
+Last 4 digits ID: 1650
+Computer IP address:
+CSE 6331, Cloud Computing					
+
+
+Quiz Q2, 3.30, Summer 2019   (c) DL, UTA, 2019
+
+
+  C&P means cut and paste only those relevant lines from your program(s) into this quiz.
+
+
+ 1.  I understand that I am on my honor during this quiz, I will not collaborate, use 
+     non-allowed sources, and I will not discuss or share this quiz with anyone for the next 
+     12 hours.
+     You MAY: use Google to search, use previous source code, 
+     YOU MAY NOT use:
+     Email, Facebook, Hangouts, IM, chats, Skype or ANY other human connection.
+
+     This is a timed test. Late tests will have points deducted for being late.
+     Very late tests will not be graded.
+
+     When you are complete, with any part, please raise your hand, so we may visually inspect that part.
+
+     The second part of the test, you should electronically submit, you will need to copy and paste 
+     only those lines of code to implement that part of the test, usually a few (two to eight) lines of code. 
+     Place it immediately after the question.
+
+     Submit this Quiz (renamed) with code cut and pasted, ONLY text. DO NOT submit zips, binaries, libraries,
+     or anything other than text.
+
+     When any parts(questions) are complete complete, submit this test, you may make multiple submissions.
+
+     If you have computer, or other, problems, please raise your hand immediately.
+
+     If you understand and agree, please initial here:
+     YB
+     _________________
+
+ 2. Get files from this same folder.
+   
+ 3. Name your program/submission with your name and last digits of your ID.
+
+ 4. Using the cloud services provider, all functionality possible should be implemented on that provider.
+    (Of course, displaying web pages through a browser and the user interface is "local")
+    The cloud service provider is MS Azure.
+
+ 4+. Please DO NOT "select" all tuples and then "filter" results, that is very inefficient and wastes time, 
+     "select" ONLY those tuples (rows) actually needed (for example with "where x>y" or similar).
+     In order to give as many people the opportunity to demo in the last few minutes, you may only demo ONE Question in the
+     last 5 minutes of the quiz time or for the few minutes afterward. 
+  
+Show and submit code, when each part is complete, raise your hand and then show us:
+
+ 5. Show a web page and interface (which resides on the cloud provider) with your student ID followed by your
+    last name then comma then first name (as it appears on your student ID), in large font at the top of every web page displayed 
+    (for this quiz)
+    Upload the earthquake data ("quakes3") to cloud service, and import into a relational DB (SQL).
+    Then, below your name and ID, through a web interface (page), allow a user to give two latitude values (lat)  
+    (for example 3.0 and 5.0), and on the web page list each quake ONLY location (the name, the "place" location)
+    AND date and magnitude within that range. 
+
+<h1>1001731650</h1>
+<h1>Bardapurkar, Yash</h1>
+<br>
+
+
+
+@app.route('/prob5', methods=["POST"])
+def problem5():
+    start_latitude = float(request.form["start_latitude"])
+    end_latitude = float(request.form["end_latitude"])
+
+    if (start_latitude < end_latitude):
+        return "start magnitude must be greater than end magnitude"
+
+    cursor = connect.cursor()
+    sql = "SELECT time, place, mag, time from quake3 where latitude between ? and ?"
+    cursor.execute(sql, (end_latitude, start_latitude))
+
+    result = []
+    for row in cursor.fetchall():
+        result.append([row[0], row[1], row[2]])
+
+    return render_template('prob5.html', result=result)
+
+ 6. Through a web interface (page), allow a user to give you the number of times to do the "query", 
+    you will do the previous step 5 (part 5) that number of times, where the two lat values will be randomly chosen between 
+    those values given.
+    Then you will do that number of queries, each time generating new random value "pairs" within that range. 
+    (For example: the number of times, for instance 42 times, and we give you the range 3.0 and 5.0, you generate 
+    two random values within that range, for example 3.8 and 4.1, then 4.3 and 4.4, repeating 42 times.)
+    Then you will show: 
+    The number of matching tuples (results) EACH time through AND random values generated as well 
+    as the time taken to do EACH "random" query.
+
+
+@app.route('/prob6', methods=["POST"])
+def problem6():
+    query_count = int(request.form["query_count"])
+
+    inp1 = float(request.form["inp1"])
+    inp2 = float(request.form["inp2"])
+
+    result = []
+    i = 0
+
+    for i in range(query_count):
+
+        latitude1 = round(random.uniform(inp2, inp1), 1)
+        latitude2 = round(random.uniform(inp2, inp1), 1)
+
+        if (latitude1 > latitude2):
+            start_latitude = latitude1
+            end_latitude = latitude2
+        else:
+            start_latitude = latitude2
+            end_latitude = latitude1
+
+        # start
+        start_time = datetime.datetime.now().timestamp()
+
+        cursor = connect.cursor()
+        sql = "SELECT time, place, mag, time from quake3 where latitude between ? and ?"
+        cursor.execute(sql, (end_latitude, start_latitude))
+
+        # end time
+        total_time = (datetime.datetime.now().timestamp() - start_time)
+
+        result.append({
+            "numbers": str(end_latitude) + " to " + str(start_latitude),
+            "count": str(len(cursor.fetchall())),
+            "time": str(total_time * 1000)
+            })
+
+    return render_template('prob6.html', result=result)
+
+ 7. Repeat part 6 using an in-memory caching mechanism (NOT an in-memory database) repeat the previous step, then show us.
+
+ @app.route('/prob7', methods=["POST"])
+def problem7():
+    query_count = int(request.form["query_count"])
+
+    inp1 = float(request.form["inp1"])
+    inp2 = float(request.form["inp2"])
+
+    result = []
+    i = 0
+
+    for i in range(query_count):
+
+        latitude1 = round(random.uniform(inp2, inp1), 1)
+        latitude2 = round(random.uniform(inp2, inp1), 1)
+
+        if (latitude1 > latitude2):
+            start_latitude = latitude1
+            end_latitude = latitude2
+        else:
+            start_latitude = latitude2
+            end_latitude = latitude1
+
+        # start
+        start_time = datetime.datetime.now().timestamp()
+
+        key = 'q3_mag_' + str(end_latitude) + '_' + str(start_latitude)
+
+        output = []
+        if r.exists(key):
+            output = json.loads(r.get(key))
+        else:
+            cursor = connect.cursor()
+            sql = "SELECT time, place, mag, time from quake3 where latitude between ? and ?"
+            cursor.execute(sql, (end_latitude, start_latitude))
+
+            output = []
+            for row in cursor.fetchall():
+                output.append([row[0], row[1], row[2]])
+
+            r.set(key, json.dumps(output))
+
+        # end time
+        total_time = (datetime.datetime.now().timestamp() - start_time)
+
+        result.append({
+            "numbers": str(end_latitude) + " to " + str(start_latitude),
+            "count": str(len(output)),
+            "time": str(total_time * 1000)
+            })
+
+    return render_template('prob7.html', result=result)
+
+ 8. Repeat part 6, allow a user to either use an in-memory caching mechanism or none, and for ALL queries 
+    show ONLY cumulative time to do ALL queries.
+
+@app.route('/prob8', methods=["POST"])
+def problem8():
+    query_count = int(request.form["query_count"])
+
+    inp1 = float(request.form["inp1"])
+    inp2 = float(request.form["inp2"])
+
+    use_cache = (request.form["use_cache"] == "True")
+
+    result = []
+    i = 0
+
+    for i in range(query_count):
+
+        latitude1 = round(random.uniform(inp2, inp1), 1)
+        latitude2 = round(random.uniform(inp2, inp1), 1)
+
+        if (latitude1 > latitude2):
+            start_latitude = latitude1
+            end_latitude = latitude2
+        else:
+            start_latitude = latitude2
+            end_latitude = latitude1
+
+        # start
+        start_time = datetime.datetime.now().timestamp()
+
+        key = 'q3_mag_' + str(end_latitude) + '_' + str(start_latitude)
+
+        output = []
+        if (use_cache and r.exists(key)):
+            output = json.loads(r.get(key))
+        else:
+            cursor = connect.cursor()
+            sql = "SELECT time, place, mag, time from quake3 where latitude between ? and ?"
+            cursor.execute(sql, (end_latitude, start_latitude))
+
+            output = []
+            for row in cursor.fetchall():
+                output.append([row[0], row[1], row[2]])
+
+            r.set(key, json.dumps(output))
+
+        # end time
+        total_time = (datetime.datetime.now().timestamp() - start_time)
+
+        result.append({
+            "numbers": str(end_latitude) + " to " + str(start_latitude),
+            "count": str(len(output)),
+            "time": str(total_time * 1000)
+            })
+
+    return render_template('prob8.html', result=result)
+
+ 9. Show GTA parts 5, 6, 7, 8
+
+ 10. When complete, return (send) this quiz
+     If you finish early, send this immediately, otherwise send between
+     the end of class and no more than 1 minute after that.

@@ -1,0 +1,30 @@
+<h1>1001731650</h1>
+<h1>Bardapurkar, Yash</h1>
+<br>
+
+<h1>6)</h1>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript">
+		google.charts.load('current', {'packages':['corechart']});
+		google.charts.setOnLoadCallback(drawChart);
+
+		function drawChart() {
+			var pieData = google.visualization.arrayToDataTable([
+				['Percentage range', 'Number of States'],
+				{% for row in result %}
+				[ '{{ row[0] }}' , {{ row[1] }} ],
+				{% endfor %}
+				])
+			var pieOptions = {
+				title: 'States by Voting percentage',
+				width: 1200,
+			};
+			var pieChart = new google.visualization.PieChart(document.getElementById('piechart'));
+			pieChart.draw(pieData, pieOptions);
+
+		}
+
+</script>
+
+<div id="piechart" style="width: 1000px; height: 700px;"></div>

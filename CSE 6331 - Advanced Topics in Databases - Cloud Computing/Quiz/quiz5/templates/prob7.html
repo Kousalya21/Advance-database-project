@@ -1,0 +1,76 @@
+{% for item in deets %}
+<h1>{{ item }}</h1>
+{% endfor %}
+<br>
+
+<h1>7)</h1>
+
+<style type="text/css">
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+</style>
+
+<h1>Centroids ({{col1}} and {{col2}})</h1>
+<table>
+	<tr>
+		<th>Index</th>
+		<th>{{col1}}</th>
+		<th>{{col2}}</th>
+		<th>Size</th>
+	</tr>
+	{% for row in centroids %}
+	<tr>
+		<td>{{ row[0] }}</td>
+		<td>{{ row[1] }}</td>
+		<td>{{ row[2] }}</td>
+		<td>{{ row[3] }}</td>
+		<td>
+			<form action="/prob7_cluster" method="post">
+				<input type="hidden" name="clusterIndex" value="{{row[0]}}">
+				<input type="hidden" name="col1" value="{{row[1]}}">
+				<input type="hidden" name="col2" value="{{row[2]}}">
+				<input type="hidden" name="column1" value="{{column1}}">
+				<input type="hidden" name="column2" value="{{column2}}">
+				<input type="hidden" name="clusterno" value="{{clusterno}}">
+				<input type="submit" name="Select">
+			</form>
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+
+{% if person != None and person != {} %}
+<p>selected cluster index: {{selected_cluster}}</p>
+<p>person in selected cluster:</p>
+<table>
+	<tr>
+		<th>CabinNum</th>
+		<th>Fname</th>
+		<th>Lname</th>
+		<th>Age</th>
+		<th>Height</th>
+		<th>Education</th>
+		<th>wealth</th>
+		<th>Survived</th>
+		<th>Lat</th>
+		<th>Long</th>
+		<th>Fare</th>
+	</tr>
+	<tr>
+		<td>{{ person[0] }}</td>
+		<td>{{ person[1] }}</td>
+		<td>{{ person[2] }}</td>
+		<td>{{ person[3] }}</td>
+		<td>{{ person[4] }}</td>
+		<td>{{ person[5] }}</td>
+		<td>{{ person[6] }}</td>
+		<td>{{ person[7] }}</td>
+		<td>{{ person[8] }}</td>
+		<td>{{ person[9] }}</td>
+		<td>{{ person[10] }}</td>
+	</tr>
+</table>
+{% endif %}
+<br>

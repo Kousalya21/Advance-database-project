@@ -1,0 +1,24 @@
+<style type="text/css">
+	h1{
+		color: blue;
+	}
+</style>
+
+students in course {{ course_id }} section {{ section }} :<br>
+
+<table>
+{% for row in students %}
+
+	<tr>
+	<!--{% for item in row %}
+	<td>
+			{{ item }}
+		</td>	
+		
+	{% endfor %}
+	-->
+	{{ row }}
+	</tr>
+
+{% endfor %}
+</table>
